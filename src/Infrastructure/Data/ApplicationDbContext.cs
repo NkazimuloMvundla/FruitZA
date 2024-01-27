@@ -14,6 +14,16 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
 
     public DbSet<TodoItem> TodoItems => Set<TodoItem>();
 
+    public DbSet<Product> Products => Set<Product>();
+
+    public DbSet<AuditAction> AuditAction => Set<AuditAction>();
+
+    public DbSet<AuditActionLog> AuditActionLog => Set<AuditActionLog>();
+
+    public DbSet<AuditItem> AuditItem => Set<AuditItem>();
+
+    public DbSet<Category> Categories => Set<Category>();
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());

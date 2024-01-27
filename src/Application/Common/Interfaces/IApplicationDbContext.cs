@@ -7,5 +7,15 @@ public interface IApplicationDbContext
 
     DbSet<TodoItem> TodoItems { get; }
 
+    DbSet<Product> Products { get; }
+
+    DbSet<AuditAction> AuditAction { get; }
+
+    DbSet<AuditActionLog> AuditActionLog { get; }
+
+    DbSet<AuditItem> AuditItem { get; }
+
+    DbSet<Category> Categories { get; }
+
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 }

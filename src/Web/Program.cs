@@ -4,11 +4,12 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddKeyVaultIfConfigured(builder.Configuration);
-
 builder.Services.AddApplicationServices();
 builder.Services.AddInfrastructureServices(builder.Configuration);
 builder.Services.AddWebServices();
-
+builder.Services.AddAntiforgery();
+// Add MediatR
+/*builder.Services.AddMediatR(typeof(Program));*/
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -40,11 +41,18 @@ app.MapRazorPages();
 
 app.MapFallbackToFile("index.html");
 
+// Use ExceptionHandler before UseRouting
 app.UseExceptionHandler(options => { });
 
+// Use Routing before other middleware
+app.UseRouting();
+
+// Add Anti-forgery middleware
+app.UseAntiforgery();
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapEndpoints();
 
 app.Run();
-
-public partial class Program { }
