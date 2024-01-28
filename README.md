@@ -26,6 +26,8 @@ npm i
 
 The solution contains unit, integration, functional, and acceptance tests.
 
+ive only created intergration test for CategoryIntegrationTests and Product on Application.UnitTests project
+
 To run the unit, integration, and functional tests (excluding acceptance tests):
 ```bash
 dotnet test --filter "FullyQualifiedName!~AcceptanceTests"
