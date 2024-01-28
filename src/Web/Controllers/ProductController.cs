@@ -1,16 +1,19 @@
 ﻿using FruitZA.Application.Common.Models;
 using FruitZA.Application.Common.Security;
 using FruitZA.Application.Products.Commands.CreateProduct;
+using FruitZA.Application.Products.Commands.DeleteProduct;
+using FruitZA.Application.Products.Queries.GetExcelFiles;
 using FruitZA.Application.Products.Queries.GetProductsWithPagination;
-using FruitZA.Application.TodoItems.Queries.GetTodoItemsWithPagination;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FruitZA.Web.Controllers;
 
 //[Authorize] // Controllers that mainly require Authorization still use Controller/View; other pages use Pages
+
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class ProductController : ControllerBase
 {
 
@@ -21,8 +24,9 @@ public class ProductController : ControllerBase
         _mediator = mediator;
     }
 
+
     [HttpPost("CreateProduct")]
-   // [ValidateAntiForgeryToken] gives a 400 bad request
+/*    [ValidateAntiForgeryToken]*/
     public async Task<IActionResult> CreateProduct(CreateProductCommand command)
     {
         // Send the command using MediatR
@@ -40,6 +44,37 @@ public class ProductController : ControllerBase
         return Ok(products);
     }
 
+    [HttpDelete("DeleteProduct/{id}")]
+    public async Task<IActionResult> DeleteProduct(int id)
+    {
+        var command = new DeleteProductCommand { ProductId = id };
+        await _mediator.Send(command);
+        return NoContent();
+    }
+
+
+
+    [HttpPost("UpdloadExcel")]
+    public async Task<IActionResult> UpdloadExcel(ProcessProductExcelCommand command)
+    {
+        await _mediator.Send(command);
+        return Ok();
+    }
+
+    [HttpGet("UploadedExcelFiles")]
+    public async Task<ActionResult<PaginatedList<ExcelFileDto>>> GetUploadedExcelFiles(
+           [FromQuery] GetUploadedExcelFilesQuery query)
+    {
+        var uploadedExcelFiles = await _mediator.Send(query);
+        return Ok(uploadedExcelFiles);
+    }
+
+    [HttpGet("DownloadUploadedExcel")]
+    public async Task<IActionResult> DownloadUploadedExcel([FromQuery] DownloadUploadedProductExcelQuery query)
+    {
+        var excelBytes = await _mediator.Send(query);
+        return File(excelBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "uploaded_products.xlsx");
+    }
 
 
 }

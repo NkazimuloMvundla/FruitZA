@@ -17,38 +17,10 @@ namespace FruitZA.Infrastructure.Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.0")
+                .HasAnnotation("ProductVersion", "8.0.1")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("FruitZA.Domain.Entities.AuditAction", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("ActionName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTimeOffset>("Created")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTimeOffset>("LastModified")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("AuditAction");
-                });
 
             modelBuilder.Entity("FruitZA.Domain.Entities.AuditActionLog", b =>
                 {
@@ -60,9 +32,6 @@ namespace FruitZA.Infrastructure.Data.Migrations
 
                     b.Property<string>("AttributeChanged")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("AuditActionId")
-                        .HasColumnType("int");
 
                     b.Property<int>("AuditItemId")
                         .HasColumnType("int");
@@ -82,50 +51,15 @@ namespace FruitZA.Infrastructure.Data.Migrations
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("NewValue")
+                    b.Property<string>("UserId")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("OldValue")
+                    b.Property<string>("Value")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("UserId")
-                        .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("AuditActionId");
-
-                    b.HasIndex("AuditItemId");
 
                     b.ToTable("AuditActionLog");
-                });
-
-            modelBuilder.Entity("FruitZA.Domain.Entities.AuditItem", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTimeOffset>("Created")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FeatureName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTimeOffset>("LastModified")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("AuditItem");
                 });
 
             modelBuilder.Entity("FruitZA.Domain.Entities.Category", b =>
@@ -285,6 +219,46 @@ namespace FruitZA.Infrastructure.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("TodoLists");
+                });
+
+            modelBuilder.Entity("FruitZA.Domain.Entities.UploadedExcel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<byte[]>("Content")
+                        .IsRequired()
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<string>("ContentType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("LastModified")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("UploadedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Resources");
                 });
 
             modelBuilder.Entity("FruitZA.Infrastructure.Identity.ApplicationUser", b =>
@@ -489,23 +463,6 @@ namespace FruitZA.Infrastructure.Data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("FruitZA.Domain.Entities.AuditActionLog", b =>
-                {
-                    b.HasOne("FruitZA.Domain.Entities.AuditAction", "AuditAction")
-                        .WithMany("AuditActionLogs")
-                        .HasForeignKey("AuditActionId");
-
-                    b.HasOne("FruitZA.Domain.Entities.AuditItem", "AuditItem")
-                        .WithMany("AuditActionLogs")
-                        .HasForeignKey("AuditItemId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("AuditAction");
-
-                    b.Navigation("AuditItem");
-                });
-
             modelBuilder.Entity("FruitZA.Domain.Entities.TodoItem", b =>
                 {
                     b.HasOne("FruitZA.Domain.Entities.TodoList", "List")
@@ -589,16 +546,6 @@ namespace FruitZA.Infrastructure.Data.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("FruitZA.Domain.Entities.AuditAction", b =>
-                {
-                    b.Navigation("AuditActionLogs");
-                });
-
-            modelBuilder.Entity("FruitZA.Domain.Entities.AuditItem", b =>
-                {
-                    b.Navigation("AuditActionLogs");
                 });
 
             modelBuilder.Entity("FruitZA.Domain.Entities.TodoList", b =>

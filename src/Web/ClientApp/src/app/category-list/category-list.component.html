@@ -18,5 +18,15 @@
       </tr>
     </tbody>
   </table>
+  <pagination
+  [(ngModel)]="currentPage"
+       [totalItems]="totalItems"
+       [itemsPerPage]="pageSize"
+       [maxSize]="maxSize"
+       [boundaryLinks]="true"
+       (pageChanged)="pageChanged($event)"
+       class="mt-3"
+ ></pagination>
   <button class="btn btn-success" (click)="navigateToAddCategory()">Add Category</button>
+
 </div>

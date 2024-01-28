@@ -5,6 +5,7 @@ import { CategoryClient, CreateOrUpdateCategoryCommand, ICategoryDto } from '../
 import { CategoryValidationService } from '../services/CategoryValidationService';
 import { Subject } from 'rxjs';
 import { ReloadService } from '../services/ReloadService.service';
+import { ExceptionModalService } from '../services/exception-modal.service';
 
 @Component({
   selector: 'app-edit-category',
@@ -19,7 +20,7 @@ export class EditCategoryModalComponent implements OnInit {
   categoryForm: FormGroup;
   submitted = false;
   reloadSubject: Subject<void> = new Subject<void>();
-  constructor(private reloadService: ReloadService,public bsModalRef: BsModalRef, private fb: FormBuilder, private categoryClient: CategoryClient,  private categoryValidationService: CategoryValidationService) { }
+  constructor(private exceptionModalService: ExceptionModalService,private reloadService: ReloadService,public bsModalRef: BsModalRef, private fb: FormBuilder, private categoryClient: CategoryClient,  private categoryValidationService: CategoryValidationService) { }
 
   ngOnInit() {
     this.initForm();
@@ -47,7 +48,7 @@ export class EditCategoryModalComponent implements OnInit {
           this.reloadService.emitReload(); // Emit reload signal after successful submission
         },
         (error) => {
-          // Handle error
+          this.exceptionModalService.openModal(error);
         }
       );
 

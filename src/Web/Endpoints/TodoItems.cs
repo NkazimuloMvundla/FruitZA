@@ -1,4 +1,4 @@
-﻿using FruitZA.Application.Common.Models;
+﻿/*using FruitZA.Application.Common.Models;
 using FruitZA.Application.TodoItems.Commands.CreateTodoItem;
 using FruitZA.Application.TodoItems.Commands.DeleteTodoItem;
 using FruitZA.Application.TodoItems.Commands.UpdateTodoItem;
@@ -49,3 +49,4 @@ public class TodoItems : EndpointGroupBase
         return Results.NoContent();
     }
 }
+*/

@@ -1,7 +1,11 @@
 ﻿using FruitZA.Application.Common.Interfaces;
+using FruitZA.Application.Common.Security;
+using FruitZA.Application.Common.Utils;
 using FruitZA.Domain.Entities;
 using FruitZA.Domain.Events;
 using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
+
 
 namespace FruitZA.Application.Products.Commands.CreateProduct;
 
@@ -19,15 +23,21 @@ public class CreateProductCommandValidator : AbstractValidator<CreateProductComm
 {
     public CreateProductCommandValidator()
     {
+/*        RuleFor(command => command.ProductCode).NotEmpty().WithMessage("Product Code is required.");*/
+        RuleFor(command => command.Name).NotEmpty().WithMessage("Name is required.");
+        RuleFor(command => command.CategoryName).NotEmpty().WithMessage("Category Name is required.");
+        RuleFor(command => command.Price).NotEmpty().WithMessage("Price is required.");
     }
 }
-
+[Authorize]
 public class CreateProductCommandHandler : IRequestHandler<CreateProductCommand, int>
 {
     private readonly IApplicationDbContext _context;
-
-    public CreateProductCommandHandler(IApplicationDbContext context)
+    private readonly IUser _user;
+    public CreateProductCommandHandler(IApplicationDbContext context, IUser user)
     {
+
+        _user = user;
         _context = context;
     }
 
@@ -40,6 +50,8 @@ public class CreateProductCommandHandler : IRequestHandler<CreateProductCommand,
 
         if (existingProduct != null)
         {
+       
+
             // If product exists, update its properties
             existingProduct.Name = request.Name;
             existingProduct.Description = request.Description;
@@ -49,9 +61,22 @@ public class CreateProductCommandHandler : IRequestHandler<CreateProductCommand,
             // Convert image to byte array if it exists
             if (request.image != null)
             {
-                imageBytes = await ConvertFileToByteArray(request.image);
+                imageBytes = await FileConverter.ConvertFileToByteArray(request.image);
                 existingProduct.Image = imageBytes;
             }
+            // Create audit log entry
+            var auditLog = new AuditActionLog
+            {
+                AuditItemId = (int)AuditItem.CreateProduct,// Use existing product ID if it exists, otherwise use the newly created product ID
+                DateChanged = DateTime.UtcNow,
+                UserId = _user.Id, // Set the user ID who performed the action (if available)
+                Value =  JsonConvert.SerializeObject(existingProduct),
+                AttributeChanged = "Product" // Specify the attribute changed (e.g., "Product")
+            };
+
+            // Add audit log entry to the context
+            _context.AuditActionLog.Add(auditLog);
+
 
             // Save changes to the database
             await _context.SaveChangesAsync(cancellationToken);
@@ -67,7 +92,7 @@ public class CreateProductCommandHandler : IRequestHandler<CreateProductCommand,
             // Convert image to byte array if it exists
             if (request.image != null)
             {
-                imageBytes = await ConvertFileToByteArray(request.image);
+                imageBytes = await FileConverter.ConvertFileToByteArray(request.image);
             }
 
             // Create a new Product entity
@@ -80,6 +105,19 @@ public class CreateProductCommandHandler : IRequestHandler<CreateProductCommand,
                 Price = request.Price,
                 Image = imageBytes
             };
+
+            var auditLog = new AuditActionLog
+            {
+                AuditItemId = (int)AuditItem.CreateProduct,// Use existing product ID if it exists, otherwise use the newly created product ID
+                DateChanged = DateTime.UtcNow,
+                UserId = _user.Id, // Set the user ID who performed the action (if available)
+                Value = JsonConvert.SerializeObject(entity),
+                AttributeChanged = "Product",
+                Created  = DateTime.UtcNow
+            };
+
+            // Add audit log entry to the context
+            _context.AuditActionLog.Add(auditLog);
 
             // Add domain event
             entity.AddDomainEvent(new ProductCreatedEvent(entity));
@@ -94,28 +132,9 @@ public class CreateProductCommandHandler : IRequestHandler<CreateProductCommand,
             return entity.Id;
         }
 
+
     }
 
-    private async Task<byte[]> ConvertFileToByteArray(IFormFile file)
-    {
-        using (var memoryStream = new MemoryStream())
-        {
-            await file.CopyToAsync(memoryStream);
-            return memoryStream.ToArray();
-        }
-    }
-
-
-    //todo:move to it own file
- /*   private async Task<string> ConvertFileToBase64(IFormFile file)
-    {
-        using (var memoryStream = new MemoryStream())
-        {
-            await file.CopyToAsync(memoryStream);
-            byte[] fileBytes = memoryStream.ToArray();
-            return Convert.ToBase64String(fileBytes);
-        }
-    }*/
     private async Task<string> GetExistingProductsCode()
     {
         string? latestProductCode = null;
@@ -149,4 +168,12 @@ public class CreateProductCommandHandler : IRequestHandler<CreateProductCommand,
 
         return newProductCode;
     }
+
+    public enum AuditItem
+    {
+        CreateProduct,
+        UpdateProduct,
+        // Add more items as needed
+    }
+
 }

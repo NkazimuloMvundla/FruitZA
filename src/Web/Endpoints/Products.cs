@@ -1,4 +1,4 @@
-﻿using FruitZA.Application.Products.Commands.CreateProduct;
+﻿/*using FruitZA.Application.Products.Commands.CreateProduct;
 using FruitZA.Application.TodoItems.Commands.CreateTodoItem;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,3 +18,4 @@ public class Products : EndpointGroupBase
         return await sender.Send(command);
     }
 }
+*/

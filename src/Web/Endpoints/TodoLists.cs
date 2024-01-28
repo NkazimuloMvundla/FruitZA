@@ -1,4 +1,4 @@
-﻿using FruitZA.Application.TodoLists.Commands.CreateTodoList;
+﻿/*using FruitZA.Application.TodoLists.Commands.CreateTodoList;
 using FruitZA.Application.TodoLists.Commands.DeleteTodoList;
 using FruitZA.Application.TodoLists.Commands.UpdateTodoList;
 using FruitZA.Application.TodoLists.Queries.GetTodos;
@@ -39,3 +39,4 @@ public class TodoLists : EndpointGroupBase
         return Results.NoContent();
     }
 }
+*/

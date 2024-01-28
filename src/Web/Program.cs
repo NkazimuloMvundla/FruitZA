@@ -1,6 +1,10 @@
+
 using FruitZA.Infrastructure.Data;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+
 
 // Add services to the container.
 builder.Services.AddKeyVaultIfConfigured(builder.Configuration);
@@ -8,8 +12,7 @@ builder.Services.AddApplicationServices();
 builder.Services.AddInfrastructureServices(builder.Configuration);
 builder.Services.AddWebServices();
 builder.Services.AddAntiforgery();
-// Add MediatR
-/*builder.Services.AddMediatR(typeof(Program));*/
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

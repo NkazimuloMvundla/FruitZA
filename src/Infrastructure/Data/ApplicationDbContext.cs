@@ -16,13 +16,15 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
 
     public DbSet<Product> Products => Set<Product>();
 
-    public DbSet<AuditAction> AuditAction => Set<AuditAction>();
+/*    public DbSet<AuditAction> AuditAction => Set<AuditAction>();*/
 
     public DbSet<AuditActionLog> AuditActionLog => Set<AuditActionLog>();
-
-    public DbSet<AuditItem> AuditItem => Set<AuditItem>();
+/*
+    public DbSet<AuditItem> AuditItem => Set<AuditItem>();*/
 
     public DbSet<Category> Categories => Set<Category>();
+
+    public DbSet<UploadedExcel> Resources => Set<UploadedExcel>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

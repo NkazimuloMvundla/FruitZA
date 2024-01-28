@@ -9,13 +9,13 @@ public interface IApplicationDbContext
 
     DbSet<Product> Products { get; }
 
-    DbSet<AuditAction> AuditAction { get; }
-
     DbSet<AuditActionLog> AuditActionLog { get; }
 
-    DbSet<AuditItem> AuditItem { get; }
+/*    DbSet<AuditItem> AuditItem { get; }*/
 
     DbSet<Category> Categories { get; }
+
+    DbSet<UploadedExcel> Resources { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 }

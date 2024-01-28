@@ -9,11 +9,7 @@ public class AuditActionLog  :  BaseAuditableEntity
 {
     public int AuditItemId { get; set; }
     public System.DateTime DateChanged { get; set; }
-    public Nullable<int> UserId { get; set; }
-    public string? NewValue { get; set; }
-    public string? OldValue { get; set; }
+    public string? UserId { get; set; }
+    public string? Value { get; set; }
     public string? AttributeChanged { get; set; }
-
-    public virtual AuditAction? AuditAction { get; set; }
-    public virtual AuditItem? AuditItem { get; set; }
 }

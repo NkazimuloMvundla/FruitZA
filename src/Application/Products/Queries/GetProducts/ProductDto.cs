@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using FruitZA.Application.TodoLists.Queries.GetTodos;
 using FruitZA.Domain.Entities;
 
 namespace FruitZA.Application.Products.Queries.CreateProduct;

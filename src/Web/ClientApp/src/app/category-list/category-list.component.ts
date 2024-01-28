@@ -16,18 +16,22 @@ export class CategoryListComponent implements OnInit {
   selectedProduct: ICategoryDto | undefined;
   bsModalRef?: BsModalRef;
   reloadSubscription: Subscription;
-
+  searchQuery: string = '';
+  currentPage: number = 1;
+  pageSize: number = 10; // Adjust as needed
+  totalItems: number = 0;
+  maxSize: number = 5; // Adjust as needed
   constructor(private reloadService: ReloadService,private categoryService: CategoryClient,private modalService: BsModalService,private router: Router) { }
 
   ngOnInit() {
     this.loadCategories();
     this.reloadSubscription = this.reloadService.getReloadSubject().subscribe(() => {
       // Perform actions to reload data or refresh view
-      this.loadCategories();
+      this.loadCategories(1);
     });
   }
 
-  loadCategories(): void {
+  loadCategories(pageNumber: number = 1): void {
     // Call your service method to get the paginated list of products
     this.categoryService.category_GetCategories(1,10).subscribe(
       (data: IPaginatedListOfCategoryDto) => {
@@ -38,6 +42,10 @@ export class CategoryListComponent implements OnInit {
         console.log('Error fetching products:', error);
       }
     );
+  }
+
+  pageChanged(event: any): void {
+    this.loadCategories(event.page);
   }
 
   openModalWithComponent(category: any) {

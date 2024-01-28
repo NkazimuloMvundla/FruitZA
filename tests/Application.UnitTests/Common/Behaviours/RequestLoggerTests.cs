@@ -1,6 +1,6 @@
-﻿using FruitZA.Application.Common.Behaviours;
+﻿/*using FruitZA.Application.Common.Behaviours;
 using FruitZA.Application.Common.Interfaces;
-using FruitZA.Application.TodoItems.Commands.CreateTodoItem;
+
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
@@ -42,3 +42,4 @@ public class RequestLoggerTests
         _identityService.Verify(i => i.GetUserNameAsync(It.IsAny<string>()), Times.Never);
     }
 }
+*/

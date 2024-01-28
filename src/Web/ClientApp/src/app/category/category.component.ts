@@ -4,6 +4,8 @@ import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, Validators }
 import { BsModalRef } from 'ngx-bootstrap/modal';
 import { ReloadService } from '../services/ReloadService.service';
 import { Router } from '@angular/router';
+import { ExceptionModalService } from '../services/exception-modal.service';
+import { SuccessModalService } from '../success-modal-service/success-modal-service.component';
 
 @Component({
   selector: 'app-category',
@@ -14,7 +16,7 @@ export class CategoryComponent implements OnInit {
   categoryForm: FormGroup;
   submitted = false;
 
-  constructor(private router: Router,private reloadService: ReloadService,public bsModalRef: BsModalRef,private fb: FormBuilder, private categoryService: CategoryClient) { }
+  constructor(private successModalService: SuccessModalService, private exceptionModalService: ExceptionModalService, private router: Router,private reloadService: ReloadService,public bsModalRef: BsModalRef,private fb: FormBuilder, private categoryService: CategoryClient) { }
 
   ngOnInit() {
     this.initForm();
@@ -34,6 +36,7 @@ export class CategoryComponent implements OnInit {
       this.categoryService.category_CreateCategory(categoryData).subscribe(
         () => {
           console.log('Category created successfully.');
+          this.successModalService.openModal('Category created successfully.');
           // Optionally reset the form after successful submission
           this.categoryForm.reset();
           this.submitted = false;
@@ -43,6 +46,7 @@ export class CategoryComponent implements OnInit {
         },
         (error) => {
           console.error('Error creating category:', error);
+          this.exceptionModalService.openModal(error);
         }
       );
     } else {

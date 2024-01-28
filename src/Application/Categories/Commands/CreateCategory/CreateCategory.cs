@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FruitZA.Application.Common.Exceptions;
 using FruitZA.Application.Common.Interfaces;
 using FruitZA.Domain.Entities;
 
@@ -44,13 +45,13 @@ public class CreateOrUpdateCategoryCommandHandler : IRequestHandler<CreateOrUpda
 
             if (existingCategory == null)
             {
-                throw new NotFoundException(nameof(Category), request.CategoryCode);
+                throw new FruitSAException("Category Not Found");
             }
 
             // Check if the category code is being updated to an existing one
             if (categoryWithSameCode != null && categoryWithSameCode.Id != existingCategory.Id)
             {
-                throw new Exception("Category code already exists.");
+                throw new FruitSAException("Category code already exists.");
             }
 
             existingCategory.CategoryCode = request.CategoryCode;
@@ -67,7 +68,7 @@ public class CreateOrUpdateCategoryCommandHandler : IRequestHandler<CreateOrUpda
             // Create new category
             if (categoryWithSameCode != null)
             {
-                throw new Exception("Category code already exists.");
+                throw new FruitSAException("Category code already exists.");
             }
 
             // Check if the name is already associated with a different category
@@ -75,7 +76,7 @@ public class CreateOrUpdateCategoryCommandHandler : IRequestHandler<CreateOrUpda
 
             if (categoryWithSameName != null)
             {
-                throw new Exception("Category name already exists for another category.");
+                throw new FruitSAException("Category name already exists for another category.");
             }
 
             var category = new Category

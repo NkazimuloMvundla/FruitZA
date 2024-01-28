@@ -1,7 +1,11 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FileParameter, IProductPaginationDto, ProductClient } from '../web-api-client';
+import { CategoryClient, FileParameter, ICategoryDto, IPaginatedListOfCategoryDto, IProductPaginationDto, ProductClient } from '../web-api-client';
 import { BsModalRef } from 'ngx-bootstrap/modal';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
+import { ReloadService } from '../services/ReloadService.service';
+import { Subscription } from 'rxjs';
+import { ExceptionModalService } from '../services/exception-modal.service';
 
 @Component({
   selector: 'app-EditProductModal',
@@ -18,10 +22,24 @@ export class EditProductModalComponent implements OnInit {
   selectedImage: string | ArrayBuffer | null = null;
   productForm: FormGroup;
   fileToUpload: File | null = null;
-  constructor(public bsModalRef: BsModalRef, private fb: FormBuilder, private productsClient: ProductClient) {}
+  categories: ICategoryDto[] = []; // Store the list of categories
+  submitted = false;
+  reloadSubscription: Subscription;
+  constructor( private exceptionModalService: ExceptionModalService,private categoryService: CategoryClient,private router: Router,private reloadService: ReloadService,public bsModalRef: BsModalRef, private fb: FormBuilder, private productsClient: ProductClient) {}
 
   ngOnInit() {
     this.initForm();
+    this.getCategories();
+    this.setInitialValues();
+    this.reloadSubscription = this.reloadService.getReloadSubject().subscribe(() => {
+
+    });
+  }
+
+  setInitialValues() {
+    this.productForm.patchValue({
+      categoryName: this.product.categoryName
+    });
   }
 
   initForm() {
@@ -44,13 +62,18 @@ export class EditProductModalComponent implements OnInit {
   }
 
   submitEditForm() {
+    this.submitted = true
     if (this.productForm.valid) {
       const productData = new FormData();
-      const fileParameter: FileParameter = {
-        data: this.fileToUpload,
-        fileName: this.fileToUpload.name
-      };
+      let fileParameter: FileParameter | null = null; // Declare the variable outside the if block
+      // const productData = new FormData();
+      if (this.fileToUpload){
+        fileParameter = {
+          data: this.fileToUpload,
+          fileName: this.fileToUpload.name
+        };
 
+      }
       this.productsClient.product_CreateProduct(
         this.productForm.value.productCode,
         this.productForm.value.name,
@@ -62,10 +85,16 @@ export class EditProductModalComponent implements OnInit {
         (productId) => {
           // Handle success, e.g., show a success message
           console.log('Product updated successfully. Product ID:', productId);
+          this.productForm.reset();
+          this.submitted = false;
+          this.bsModalRef.hide(); // Close modal after successful submission
+          this.reloadService.emitReload(); // Emit reload signal after successful submission
+          this.router.navigate(['/products']); // Navigate to the Add Category page
         },
         (error) => {
           // Handle error, e.g., show an error message
           console.error('Error updating product:', error);
+          this.exceptionModalService.openModal(error);
         }
       );
     } else {
@@ -100,6 +129,23 @@ export class EditProductModalComponent implements OnInit {
         this.selectedImage = reader.result;
       };
     }
+  }
+
+  getCategories() {
+    this.categoryService.category_GetCategories(1, 10).subscribe(
+      (data: IPaginatedListOfCategoryDto) => {
+        console.log(data);
+        this.categories = data.items; // Assuming categories are stored in 'items' property
+      },
+      error => {
+        console.log('Error fetching categories:', error);
+      }
+    );
+  }
+
+  ngOnDestroy() {
+    // Unsubscribe to avoid memory leaks
+    this.reloadSubscription.unsubscribe();
   }
 
 }
