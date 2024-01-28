@@ -16,7 +16,7 @@ dotnet watch run
 
 Navigate to https://localhost:5001. The application will automatically reload if you change any of the source files.
 
-## navigate to angular project
+## navigate to angular project(CLIENT APP folder)
 
 npm i
 
